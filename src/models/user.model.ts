@@ -6,7 +6,7 @@ export interface IUser {
   password: string;
   refresh_token: string;
   isValidPassword: Function;
-  isValidrefreshToken: Function;
+  isValidRefreshToken: Function;
 }
 
 export const UserSchema = new Schema<IUser>({
@@ -29,9 +29,8 @@ UserSchema.methods.isValidPassword = async function (password: string) {
   return await bcrypt.compare(password, this.password);
 };
 
-UserSchema.methods.isValidrefreshToken = async function (refresh_token: string) {
-  const user: IUser = this as unknown as IUser;
-  return await bcrypt.compare(refresh_token, user.refresh_token);
+UserSchema.methods.isValidRefreshToken = async function (refresh_token: string) {
+  return await bcrypt.compare(refresh_token, this.refresh_token);
 };
 
 export const UserModel = model<IUser>('UserModel', UserSchema);
