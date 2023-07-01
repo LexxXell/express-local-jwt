@@ -121,7 +121,7 @@ authRouter.post('/refresh', async (request: Request, response: Response, next: N
     try {
       const user = await UserModel.findOne({ username });
       const token = request.headers.authorization?.split('Bearer ')[1];
-      if (!user || !(await user.isValidRefreshToken(token))) {
+      if (!user || !token || !(await user.isValidRefreshToken(token))) {
         return response.status(401).json({ error: 'Unauthorized' });
       }
       const refresh_token = jwt.sign({ username }, JWT_RT_SECRET, { expiresIn: JWT_RT_EXP_IN });

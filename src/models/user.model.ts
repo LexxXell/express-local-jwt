@@ -1,15 +1,18 @@
-import { model, Schema } from 'mongoose';
+import { Model, model, Schema } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 
 export interface IUser {
   username: string;
   password: string;
   refresh_token: string;
-  isValidPassword: Function;
-  isValidRefreshToken: Function;
 }
 
-export const UserSchema = new Schema<IUser>({
+export interface IUserModel extends Model<IUser> {
+  isValidPassword(password: string): Promise<boolean>;
+  isValidRefreshToken(refresh_token: string): Promise<boolean>;
+}
+
+export const UserSchema = new Schema<IUser, IUserModel>({
   username: { type: 'string', required: true, unique: true },
   password: { type: 'string', required: true },
   refresh_token: { type: 'string', required: true },
@@ -33,4 +36,4 @@ UserSchema.methods.isValidRefreshToken = async function (refresh_token: string) 
   return await bcrypt.compare(refresh_token, this.refresh_token);
 };
 
-export const UserModel = model<IUser>('UserModel', UserSchema);
+export const UserModel = model<IUser & IUserModel>('User', UserSchema);
